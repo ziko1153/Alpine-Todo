@@ -1,3 +1,46 @@
+<?php
+// var_dump($_POST);
+
+$lists = [
+    [
+        'house_select' => 1,
+        'score' => 20,
+        'quantity' => 5,
+        'id' => 23
+    ],
+
+    [
+        'house_select' => 3,
+        'score' => 20,
+        'quantity' => 5,
+        'id' => 25
+    ],
+    [
+        'house_select' => 3,
+        'score' => 20,
+        'quantity' => 5,
+        'id' => 'task_a3fsdf'
+    ],
+    [
+        'house_select' => 3,
+        'score' => 20,
+        'quantity' => 5,
+        'id' => 24
+    ],
+];
+
+$lists2 = [
+    25, 12, 23, 24
+];
+
+$finalID = array_map(function ($a) {
+
+    return $a['id'];
+}, $lists);
+
+var_dump(array_diff($lists2, $finalID));
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -23,27 +66,33 @@
                     </tr>
                 </thead>
                 <tbody>
+
                     <template x-for="(task, index) in tasks" :key="index">
+
+
                         <tr>
                             <td>
-                                <select class="form-select" x-model="task.house_select" name="house_select[]">
-                                    <option>Open this select menu</option>
+                                <select class="form-select" x-model="task.house_select" x-bind:name="`house_select[${task.id}]`">
                                     <option value="1">One</option>
                                     <option value="2">Two</option>
                                     <option value="3">Three</option>
                                 </select>
                             </td>
-                            <td><input x-model="task.score" class="form-control" type="number" min="1" name="score[]" placeholder="Score" /></td>
-                            <td><input x-model="task.quantity" class="form-control" type="number" min="1" name="quantity[]" placeholder="Quantity"></td>
-                            <td><button class="btn btn-default" @click="removeTask(index)">X</button></td>
+                            <td><input x-model="task.score" class="form-control" type="number" min="1" x-bind:name="`score[${task.id}]`" placeholder="Score" required /></td>
+                            <td><input x-model="task.quantity" class="form-control" type="number" min="1" x-bind:name="`quantity[${task.id}]`" placeholder="Quantity" required></td>
+                            <td><button class="btn btn-default" @click.prevent="removeTask(index)">X</button></td>
                         </tr>
+
+
                     </template>
+
 
                 </tbody>
 
 
             </table>
             <button @click.prevent="addNewTask()">Add +</button>
+            <button type="submit">Submit</button>
         </form>
     </div>
 
@@ -56,15 +105,17 @@
 <script>
     let taskList = {
 
-        tasks: [],
+        tasks: <?php echo isset($lists) ? json_encode($lists) : [] ?>,
         addNewTask() {
             this.tasks.push({
                 house_select: 1,
                 score: '',
-                quantity: ''
+                quantity: '',
+                id: 'todo_' + (Math.random() + 1).toString(36).substring(7)
             });
         },
         removeTask(index) {
+            console.log(index);
             this.tasks.splice(index, 1);
         },
 
